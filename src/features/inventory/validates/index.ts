@@ -19,7 +19,7 @@ export namespace ValidateUtils {
     }
 
     defaultMessage(args: ValidationArguments) {
-      return 'Invalid year';
+      return 'Invalid year, must be less than or equal to current year';
     }
   }
 
@@ -35,7 +35,7 @@ export namespace ValidateUtils {
     }
 
     defaultMessage(args: ValidationArguments) {
-      return 'Invalid year';
+      return 'Invalid year, must be greater than current year';
     }
   }
 }

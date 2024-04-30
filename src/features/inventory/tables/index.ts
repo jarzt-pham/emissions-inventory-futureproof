@@ -25,7 +25,7 @@ export const INVENTORY_TABLE = Object.freeze({
     NAME: 'emission_reduction',
     COLUMNS: {
       ID: 'id',
-      NAME: 'name',
+      DESCRIPTION: 'description',
       YEAR: 'year',
       VALUE: 'value',
       FUEL_ID: 'fuel_id',

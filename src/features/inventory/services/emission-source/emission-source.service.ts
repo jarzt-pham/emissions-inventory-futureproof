@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EmissionConsumption, EmissionSource } from '../../entities';
 import { Repository } from 'typeorm';
 import { EmissionSourceDto } from '../../dto/emission-source';
+import { EmissionSourceException } from '../../exceptions';
 
 @Injectable()
 export class EmissionSourceService {
@@ -100,11 +101,10 @@ export class EmissionSourceService {
       entity = await this._emissionSourceRepo.findOneBy({ id });
     } catch (error) {
       this.logger.error(error.message);
-      return new InternalServerErrorException();
+      throw new InternalServerErrorException();
     }
 
-    if (!entity)
-      throw new NotFoundException(`EmissionSource with ID ${id} not found`);
+    if (!entity) throw EmissionSourceException.NotExist(id);
     return entity;
   }
 

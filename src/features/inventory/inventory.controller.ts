@@ -18,40 +18,48 @@ import {
   UpdateEmissionConsumptionDto,
 } from './dto/emisison-consumption';
 import { EmissionConsumptionService } from './services/emission-consumption/emission-consumption.service';
+import { EmissionReductionService } from './services/emission-reduction';
+import { CreateEmissionReductionDto, UpdateEmissionReductionDto } from './dto/emission-reduction';
 
 const ENDPOINT = {
+  VERSION: 'v1',
   ROOT: 'inventory',
   EMISSiON_SOURCE: {
     ROOT: 'emission-sources',
     CONSUMPTION: 'consumptions',
+    REDUCTION: 'reductions',
   },
 };
 
-@Controller(ENDPOINT.ROOT)
+@Controller(`${ENDPOINT.VERSION}/${ENDPOINT.ROOT}`)
 export class InventoryController {
   constructor(
     private readonly emissionSourceService: EmissionSourceService,
     private readonly emissionConsumptionService: EmissionConsumptionService,
+    private readonly emissionReductionService: EmissionReductionService,
   ) {}
 
+  //emission-source
   @Post(ENDPOINT.EMISSiON_SOURCE.ROOT)
-  create(@Body() createEmissionSourceDto: CreateEmissionSourceDto) {
+  createEmissionSource(
+    @Body() createEmissionSourceDto: CreateEmissionSourceDto,
+  ) {
     return this.emissionSourceService.create(createEmissionSourceDto);
   }
 
   @Get(ENDPOINT.EMISSiON_SOURCE.ROOT)
-  findAll() {
+  findAllEmissionSource() {
     return this.emissionSourceService.findAll();
   }
 
   @Get(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
-  findOne(@Param('id') id: ValidateUtils.FindOneParams) {
+  findOneEmissionSource(@Param('id') id: string) {
     return this.emissionSourceService.findOne(+id);
   }
 
   @Patch(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
-  update(
-    @Param('id') id: ValidateUtils.FindOneParams,
+  updateEmissionSource(
+    @Param('id') id: string,
     @Body() updateEmissionSourceDto: UpdateEmissionSourceDto,
   ) {
     return this.emissionSourceService.update(+id, updateEmissionSourceDto);
@@ -59,15 +67,15 @@ export class InventoryController {
 
   @Delete(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
   @HttpCode(204)
-  remove(@Param('id') id: ValidateUtils.FindOneParams) {
+  removeEmissionSource(@Param('id') id: string) {
     return this.emissionSourceService.remove(+id);
   }
 
+  //emission-consumption
   @Post(
     `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}`,
   )
   createEmissionConsumption(
-    // @Param('id') id: ValidateUtils.FindOneParams,
     @Param('id') emissionSourceId: string,
     @Body() createEmissionConsumptionDto: CreateEmissionConsumptionDto,
   ) {
@@ -96,7 +104,6 @@ export class InventoryController {
     `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
   )
   updateEmissionConsumption(
-    // @Param('id') id: ValidateUtils.FindOneParams,
     @Param('id') emissionSourceId: string,
     @Param('emission_consumption_id') emissionConsumptionId: string,
     @Body() updateEmissionConsumptionDto: UpdateEmissionConsumptionDto,
@@ -129,5 +136,53 @@ export class InventoryController {
       emissionSourceId: +emissionSourceId,
       year: year,
     });
+  }
+
+  //emission-consumption
+  @Post(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
+  )
+  createEmissionReduction(
+    @Param('id') emissionSourceId: string,
+    @Body() createEmissionReductionDto: CreateEmissionReductionDto,
+  ) {
+    return this.emissionReductionService.create({
+      emissionSourceId: +emissionSourceId,
+      createEmissionReductionDto,
+    });
+  }
+
+  @Get(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
+  )
+  findAllEmissionReduction(@Param('id') emissionSourceId: string) {
+    return this.emissionReductionService.findAll({
+      emissionSourceId: +emissionSourceId,
+    });
+  }
+
+  @Patch(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}/:emission_reduction_id`,
+  )
+  updateEmissionReduction(
+    @Param('id') emissionSourceId: string,
+    @Param('emission_reduction_id') emissionReductionId: string,
+    @Body() updateEmissionReductionDto: UpdateEmissionReductionDto,
+  ) {
+    return this.emissionReductionService.update({
+      emissionSourceId: +emissionSourceId,
+      emissionReductionId: +emissionReductionId,
+      updateEmissionReductionDto: updateEmissionReductionDto,
+    });
+  }
+
+  @Delete(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}/:emission_reduction_id`,
+  )
+  @HttpCode(204)
+  removeEmissionReduction(
+    @Param('emission_reduction_id') emissionReductionId: string,
+  ) {
+    return this.emissionReductionService.remove(+emissionReductionId);
   }
 }
