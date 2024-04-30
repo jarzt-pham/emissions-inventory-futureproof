@@ -85,4 +85,24 @@ export class EmissionConsumption {
     this.unit = unit;
     this.emissionSource = emissionSource;
   }
+
+  update({
+    year,
+    value,
+    fuel,
+    unit,
+    emissionSource,
+  }: {
+    year: number;
+    value: number;
+    fuel: Fuel;
+    unit: Unit;
+    emissionSource: EmissionSource;
+  }) {
+    this.year = year;
+    this.value = value;
+    this.fuel = fuel;
+    this.unit = unit;
+    this.emissionSource = emissionSource;
+  }
 }
