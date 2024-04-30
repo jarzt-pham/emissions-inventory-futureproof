@@ -1,0 +1,37 @@
+[
+  {
+    "fuel": "Natural gas",
+    "unit": "m3",
+    "value": 2.021
+  },
+  {
+    "fuel": "Natural gas",
+    "unit": "kWh",
+    "value": 0.185
+  },
+  {
+    "fuel": "Electricity (Gray)",
+    "unit": "kWh",
+    "value": 0.154
+  },
+  {
+    "fuel": "Electricity (Green)",
+    "unit": "kWh",
+    "value": 0.03
+  },
+  {
+    "fuel": "Diesel",
+    "unit": "liter",
+    "value": 2.58
+  },
+  {
+    "fuel": "Gasoline",
+    "unit": "liter",
+    "value": 2.233
+  },
+  {
+    "fuel": "LPG",
+    "unit": "liter",
+    "value": 1.249
+  }
+]

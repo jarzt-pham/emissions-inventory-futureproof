@@ -10,7 +10,7 @@ services:
     container_name: emission-inventory-database
     restart: always
     volumes:
-      - ./data:/var/lib/mysql
+      - ./docker:/var/lib/mysql
     env_file:
       - .env
     environment:

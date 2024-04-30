@@ -17,12 +17,16 @@ export class Fuel {
   @Column({ name: FACTOR_TABLE.FUEL.COLUMNS.NAME })
   name: string;
 
-  @OneToMany(() => FuelUnit, (fuelUnit) => fuelUnit.fuelId)
+  @OneToMany(() => FuelUnit, (fuelUnit) => fuelUnit.fuel)
   fuelUnits: FuelUnit[];
-  
+
   @CreateDateColumn({ name: FACTOR_TABLE.FUEL.COLUMNS.CREATED_AT })
   createdAt: Date;
 
   @UpdateDateColumn({ name: FACTOR_TABLE.FUEL.COLUMNS.UPDATED_AT })
   updatedAt: Date;
+
+  create({ name }: { name: string }) {
+    this.name = name;
+  }
 }

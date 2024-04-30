@@ -22,6 +22,7 @@ export const FACTOR_TABLE = Object.freeze({
     COLUMNS: {
       FUEL_ID: 'fuel_id',
       UNIT_ID: 'unit_id',
+      EMISSION_FACTOR: 'emission_factor',
       CREATED_AT: 'created_at',
       UPDATED_AT: 'updated_at',
     },
