@@ -27,20 +27,20 @@ export class EmissionConsumption {
 
   @Column({
     name: INVENTORY_TABLE.EMISSION_CONSUMPTION.COLUMNS.VALUE,
-    type: 'decimal',
+    type: 'float',
     precision: 10,
     scale: 3,
   })
   value: number;
 
-  @ManyToOne(() => Fuel, (fuel) => fuel.id, {
+  @ManyToOne(() => Fuel, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: INVENTORY_TABLE.EMISSION_CONSUMPTION.COLUMNS.FUEL_ID })
   fuel: Fuel;
 
-  @ManyToOne(() => Unit, (unit) => unit.id, {
+  @ManyToOne(() => Unit, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

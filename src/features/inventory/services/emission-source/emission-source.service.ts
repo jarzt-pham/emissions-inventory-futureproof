@@ -15,7 +15,7 @@ import { EmissionSourceDto } from '../../dto/emission-source';
 export class EmissionSourceService {
   private readonly logger = new Logger(EmissionSourceService.name);
   constructor(
-    @InjectRepository(EmissionConsumption)
+    @InjectRepository(EmissionSource)
     private readonly _emissionSourceRepo: Repository<EmissionSource>,
   ) {}
   async create(createEmissionSourceDto: CreateEmissionSourceDto) {
@@ -118,11 +118,8 @@ export class EmissionSourceService {
   }
 
   static fromDtoToModel(dto: Partial<EmissionSourceDto>) {
-    const entity = new EmissionSource();
-    entity.create({
+    return {
       description: dto.description,
-    });
-
-    return entity;
+    };
   }
 }

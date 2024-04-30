@@ -18,7 +18,7 @@ export class FuelUnit {
   @PrimaryColumn({ name: FACTOR_TABLE.FUEL_UNIT.COLUMNS.FUEL_ID })
   fuelId: number;
 
-  @ManyToOne(() => Fuel, (fuel) => fuel.id, {
+  @ManyToOne(() => Fuel, (fuel) => fuel.fuelUnits, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
@@ -28,7 +28,7 @@ export class FuelUnit {
   @PrimaryColumn({ name: FACTOR_TABLE.FUEL_UNIT.COLUMNS.UNIT_ID })
   unitId: number;
 
-  @ManyToOne(() => Unit, (unit) => unit.id, {
+  @ManyToOne(() => Unit, (unit) => unit.fuelUnits, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
@@ -37,8 +37,8 @@ export class FuelUnit {
 
   @Column({
     name: FACTOR_TABLE.FUEL_UNIT.COLUMNS.EMISSION_FACTOR,
-    type: 'decimal',
-    precision: 4,
+    type: 'float',
+    precision: 10,
     scale: 3,
   })
   emissionFactor: number;

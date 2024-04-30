@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { FACTOR_TABLE } from '../tables';
 import { FuelUnit } from './fuel-unit.entity';
+import { EmissionConsumption } from 'src/features/inventory/entities';
 
 @Entity(FACTOR_TABLE.FUEL.NAME)
 export class Fuel {
