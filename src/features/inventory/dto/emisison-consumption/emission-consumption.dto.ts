@@ -4,7 +4,7 @@ import { ValidateUtils } from '../../validates';
 export class EmissionConsumptionDto {
   id: number;
   year: number;
-  consumption_value: number;
+  consumed_value: number;
   emission_factor: number;
   converted_factor: number;
 

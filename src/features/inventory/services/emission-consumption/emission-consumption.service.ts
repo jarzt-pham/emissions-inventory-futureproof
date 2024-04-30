@@ -9,11 +9,22 @@ import { CreateEmissionConsumptionDto } from '../../dto/emisison-consumption/cre
 import { UpdateEmissionConsumptionDto } from '../../dto/emisison-consumption/update-emission-consumption.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmissionConsumption, EmissionSource } from '../../entities';
-import { Between, DataSource, Repository } from 'typeorm';
-import { Fuel, FuelUnit, Unit } from 'src/features/factor';
-import { EmissionConsumptionException } from './exceptions';
-import { EmissionConsumptionDto } from '../../dto/emisison-consumption/emission-consumption.dto';
+import { DataSource, Repository } from 'typeorm';
+import {
+  Fuel,
+  FuelException,
+  FuelUnit,
+  FuelUnitException,
+  Unit,
+  UnitException,
+} from 'src/features/factor';
+
 import { TotalEmissionDto } from '../../dto/emisison-consumption';
+import {
+  EmissionConsumptionException,
+  EmissionSourceException,
+} from '../../exceptions';
+import { EmissionSourceService } from '../emission-source';
 
 @Injectable()
 export class EmissionConsumptionService {
@@ -28,6 +39,7 @@ export class EmissionConsumptionService {
     private readonly _unitRepo: Repository<Unit>,
     @InjectRepository(EmissionSource)
     private readonly _emissionSourceRepo: Repository<EmissionSource>,
+    private readonly _emissionSourceService: EmissionSourceService,
   ) {}
 
   async isConsumptionExistInYear({
@@ -66,7 +78,7 @@ export class EmissionConsumptionService {
     }
 
     if (isExist)
-      return EmissionConsumptionException.ExistConsumption({
+      return EmissionConsumptionException.ExistInYear({
         emissionSource: isExist.emissionSource,
         fuel: isExist.fuel,
         unit: isExist.unit,
@@ -89,10 +101,7 @@ export class EmissionConsumptionService {
       throw new InternalServerErrorException();
     }
 
-    if (!emissionConsumption)
-      throw new NotFoundException(
-        `Emission consumption with id ${id} not found`,
-      );
+    if (!emissionConsumption) throw EmissionConsumptionException.NotExist(id);
 
     return emissionConsumption;
   }
@@ -133,12 +142,10 @@ export class EmissionConsumptionService {
       throw new InternalServerErrorException();
     }
 
-    if (!fuel) throw new NotFoundException(`Fuel with id ${fuelId} not found`);
-    if (!unit) throw new NotFoundException(`Unit with id ${unitId} not found`);
+    if (!fuel) throw FuelException.NotExist(fuelId);
+    if (!unit) throw UnitException.NotExist(unitId);
     if (!emissionSource)
-      throw new NotFoundException(
-        `Emission source with id ${emissionSourceId} not found`,
-      );
+      throw EmissionSourceException.NotExist(emissionSourceId);
 
     // check unit and fuel have data in fuel unit
     const isFuelUnitExist = fuelUnits.some(
@@ -146,7 +153,7 @@ export class EmissionConsumptionService {
     );
 
     if (!isFuelUnitExist)
-      throw EmissionConsumptionException.EmissionFactorIsNotFound({
+      throw FuelUnitException.NotExist({
         fuel: fuel,
         unit: unit,
       });
@@ -214,11 +221,17 @@ export class EmissionConsumptionService {
     return {
       id: savedEntity.id,
       year: savedEntity.year,
-      value: savedEntity.value,
-      fuel_id: savedEntity.fuel.id,
-      fuel_name: savedEntity.fuel.name,
-      unit_id: savedEntity.unit.id,
-      unit_name: savedEntity.unit.name,
+      consumed_value: savedEntity.value,
+      fuel: {
+        id: savedEntity.fuel.id,
+        name: savedEntity.fuel.name,
+      },
+      unit: {
+        id: savedEntity.unit.id,
+        name: savedEntity.unit.name,
+      },
+      created_at: savedEntity.createdAt,
+      updated_at: savedEntity.updatedAt,
     };
   }
 
@@ -230,11 +243,11 @@ export class EmissionConsumptionService {
     emissionSourceId: number;
     fromYear: number;
     toYear: number;
-  }): Promise<EmissionConsumptionDto[]> {
+  }) {
     let emissionConsumptionDto: {
       id: number;
       year: number;
-      consumption_value: number;
+      consumed_value: number;
       emission_factor: number;
       converted_factor: number;
 
@@ -269,7 +282,7 @@ export class EmissionConsumptionService {
         .select([
           'emissionConsumption.id as id',
           'emissionConsumption.year as year',
-          'emissionConsumption.value as consumption_value',
+          'emissionConsumption.value as consumed_value',
 
           'emissionConsumption.created_at as created_at',
           'emissionConsumption.updated_at as updated_at',
@@ -294,14 +307,22 @@ export class EmissionConsumptionService {
     return emissionConsumptionDto.map((ec) => ({
       id: ec.id,
       year: ec.year,
-      consumption_value: ec.consumption_value,
-      emission_factor: ec.emission_factor,
-      converted_factor: ec.converted_factor,
-      fuel_id: ec.fuel_id,
-      fuel_name: ec.fuel_name,
-      unit_id: ec.unit_id,
-      unit_name: ec.unit_name,
-      emission_source_id: ec.emission_source_id,
+
+      value: {
+        consumed: ec.consumed_value,
+        emission_factor: ec.emission_factor,
+        converted_factor: ec.converted_factor,
+      },
+
+      fuel: {
+        id: ec.fuel_id,
+        name: ec.fuel_name,
+      },
+      unit: {
+        id: ec.unit_id,
+        name: ec.unit_name,
+      },
+
       created_at: ec.created_at,
       updated_at: ec.updated_at,
     }));
@@ -389,24 +410,15 @@ export class EmissionConsumptionService {
       emissionSourceId,
     });
 
+    let emissionSourceClone = emissionSource;
     if (updatePayload?.emissionSourceId) {
-      try {
-        emissionSource = await this._emissionSourceRepo.findOneBy({
-          id: updatePayload.emissionSourceId,
-        });
-      } catch (error) {
-        this.logger.error(error.message);
-        throw new InternalServerErrorException();
-      }
-
-      if (!emissionSource)
-        throw new NotFoundException(
-          `Emission source with id ${updatePayload.emissionSourceId} not found`,
-        );
+      emissionSourceClone = await this._emissionSourceService.isExist(
+        updatePayload.emissionSourceId,
+      );
     }
 
     emissionConsumption.update({
-      emissionSource,
+      emissionSource: emissionSourceClone,
       fuel,
       unit,
       value: updatePayload.value,
@@ -433,10 +445,16 @@ export class EmissionConsumptionService {
       id: emissionConsumption.id,
       year: emissionConsumption.year,
       value: emissionConsumption.value,
-      fuel_id: emissionConsumption.fuel.id,
-      fuel_name: emissionConsumption.fuel.name,
-      unit_id: emissionConsumption.unit.id,
-      unit_name: emissionConsumption.unit.name,
+
+      fuel: {
+        id: emissionConsumption.fuel.id,
+        name: emissionConsumption.fuel.name,
+      },
+      
+      unit: {
+        id: emissionConsumption.unit.id,
+        name: emissionConsumption.unit.name,
+      },
     };
   }
 
