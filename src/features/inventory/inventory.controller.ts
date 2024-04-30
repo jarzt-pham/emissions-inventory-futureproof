@@ -12,7 +12,10 @@ import { CreateEmissionSourceDto } from './dto/emission-source/create-emission-s
 import { UpdateEmissionSourceDto } from './dto/emission-source/update-emission-source.dto';
 import { ValidateUtils } from './validates';
 import { EmissionSourceService } from './services/emission-source';
-import { CreateEmissionConsumptionDto } from './dto/emisison-consumption';
+import {
+  CreateEmissionConsumptionDto,
+  UpdateEmissionConsumptionDto,
+} from './dto/emisison-consumption';
 import { EmissionConsumptionService } from './services/emission-consumption/emission-consumption.service';
 
 const ENDPOINT = {
@@ -50,14 +53,11 @@ export class InventoryController {
     @Param('id') id: ValidateUtils.FindOneParams,
     @Body() updateEmissionSourceDto: UpdateEmissionSourceDto,
   ) {
-    console.log({ id });
-
     return this.emissionSourceService.update(+id, updateEmissionSourceDto);
   }
 
   @Delete(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
   remove(@Param('id') id: ValidateUtils.FindOneParams) {
-    console.log({ id });
     return this.emissionSourceService.remove(+id);
   }
 
@@ -87,6 +87,22 @@ export class InventoryController {
       emissionSourceId: +emissionSourceId,
       fromYear,
       toYear,
+    });
+  }
+
+  @Patch(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
+  )
+  updateEmissionConsumption(
+    // @Param('id') id: ValidateUtils.FindOneParams,
+    @Param('id') emissionSourceId: string,
+    @Param('emission_consumption_id') emissionConsumptionId: string,
+    @Body() updateEmissionConsumptionDto: UpdateEmissionConsumptionDto,
+  ) {
+    return this.emissionConsumptionService.update({
+      emissionSourceId: +emissionSourceId,
+      emissionConsumptionId: +emissionConsumptionId,
+      updateEmissionConsumptionDto,
     });
   }
 

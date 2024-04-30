@@ -30,18 +30,14 @@ export class EmissionConsumptionService {
     private readonly _emissionSourceRepo: Repository<EmissionSource>,
   ) {}
 
-  async create({
+  async isConsumptionExistInYear({
     emissionSourceId,
-    createEmissionConsumptionDto,
+    payload,
   }: {
     emissionSourceId: number;
-    createEmissionConsumptionDto: CreateEmissionConsumptionDto;
+    payload: CreateEmissionConsumptionDto;
   }) {
-    //mapper
-    const createPayload = EmissionConsumptionService.fromDtoToModel(
-      createEmissionConsumptionDto,
-    );
-
+    const createPayload = EmissionConsumptionService.fromDtoToModel(payload);
     //One year only consists of one emission consumption (unit, fuel, emission source)
     let isExist: EmissionConsumption;
     try {
@@ -73,6 +69,18 @@ export class EmissionConsumptionService {
         year: isExist.year,
       });
 
+    return isExist;
+  }
+
+  async isFactorMetricExist({
+    fuelId,
+    unitId,
+    emissionSourceId,
+  }: {
+    fuelId: number;
+    unitId: number;
+    emissionSourceId: number;
+  }) {
     //check payload
     let fuel: Fuel,
       unit: Unit,
@@ -81,11 +89,11 @@ export class EmissionConsumptionService {
     try {
       [fuel, unit, emissionSource] = await Promise.all([
         this._fuelRepo.findOneBy({
-          id: createPayload.fuelId,
+          id: fuelId,
         }),
         this._unitRepo.findOne({
           where: {
-            id: createPayload.unitId,
+            id: unitId,
           },
           relations: ['fuelUnits'],
         }),
@@ -97,34 +105,59 @@ export class EmissionConsumptionService {
       fuelUnits = unit.fuelUnits;
     } catch (error) {
       this.logger.error(error.message);
-      return new InternalServerErrorException();
+      throw new InternalServerErrorException();
     }
 
-    if (!fuel)
-      return new NotFoundException(
-        `Fuel with id ${createPayload.fuelId} not found`,
-      );
-    if (!unit)
-      return new NotFoundException(
-        `Unit with id ${createPayload.unitId} not found`,
-      );
+    if (!fuel) throw new NotFoundException(`Fuel with id ${fuelId} not found`);
+    if (!unit) throw new NotFoundException(`Unit with id ${unitId} not found`);
     if (!emissionSource)
-      return new NotFoundException(
+      throw new NotFoundException(
         `Emission source with id ${emissionSourceId} not found`,
       );
 
     // check unit and fuel have data in fuel unit
     const isFuelUnitExist = fuelUnits.some(
-      (fu) =>
-        fu.fuelId === createPayload.fuelId &&
-        fu.fuelId === createPayload.fuelId,
+      (fu) => fu.fuelId === fuelId && fu.fuelId === fuelId,
     );
 
     if (!isFuelUnitExist)
-      return EmissionConsumptionException.EmissionFactorIsNotFound({
+      throw EmissionConsumptionException.EmissionFactorIsNotFound({
         fuel: fuel,
         unit: unit,
       });
+
+    return {
+      fuel,
+      unit,
+      emissionSource,
+      fuelUnits,
+    };
+  }
+
+  async create({
+    emissionSourceId,
+    createEmissionConsumptionDto,
+  }: {
+    emissionSourceId: number;
+    createEmissionConsumptionDto: CreateEmissionConsumptionDto;
+  }) {
+    //mapper
+    const createPayload = EmissionConsumptionService.fromDtoToModel(
+      createEmissionConsumptionDto,
+    );
+
+    //One year only consists of one emission consumption (unit, fuel, emission source)
+    await this.isConsumptionExistInYear({
+      emissionSourceId,
+      payload: createEmissionConsumptionDto,
+    });
+
+    //check factor metric
+    const { emissionSource, fuel, unit } = await this.isFactorMetricExist({
+      fuelId: createPayload.fuelId,
+      unitId: createPayload.unitId,
+      emissionSourceId,
+    });
 
     //create entity
     const entity = new EmissionConsumption();
@@ -288,15 +321,75 @@ export class EmissionConsumptionService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} emissionConsumption`;
-  }
+  async update({
+    emissionSourceId,
+    emissionConsumptionId,
+    updateEmissionConsumptionDto,
+  }: {
+    emissionSourceId: number;
+    emissionConsumptionId: number;
+    updateEmissionConsumptionDto: UpdateEmissionConsumptionDto;
+  }) {
+    const updatePayload = EmissionConsumptionService.fromDtoToModel(
+      updateEmissionConsumptionDto,
+    );
 
-  update(
-    id: number,
-    updateEmissionConsumptionDto: UpdateEmissionConsumptionDto,
-  ) {
-    return `This action updates a #${id} emissionConsumption`;
+    // only one emission consumption in one year
+    await this.isConsumptionExistInYear({
+      emissionSourceId,
+      payload: updateEmissionConsumptionDto,
+    });
+
+    //check factor metric
+    const { emissionSource, fuel, unit } = await this.isFactorMetricExist({
+      fuelId: updateEmissionConsumptionDto.fuel_id,
+      unitId: updateEmissionConsumptionDto.unit_id,
+      emissionSourceId,
+    });
+
+    //check exist
+    let emissionConsumption: EmissionConsumption;
+    try {
+      emissionConsumption = await this._emissionConsumptionRepo.findOne({
+        where: {
+          id: emissionConsumptionId,
+        },
+      });
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new InternalServerErrorException();
+    }
+
+    if (!emissionConsumption)
+      throw new NotFoundException(
+        `Emission consumption with id ${emissionConsumptionId} not found`,
+      );
+
+    emissionConsumption.update({
+      emissionSource,
+      fuel,
+      unit,
+      value: updatePayload.value,
+      year: updatePayload.year,
+    });
+
+    const queryRunner = this._dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await this._emissionConsumptionRepo.update(
+        emissionConsumptionId,
+        emissionConsumption,
+      );
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(error.message);
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return EmissionConsumptionService.fromModelToDto(emissionConsumption);
   }
 
   remove(id: number) {
