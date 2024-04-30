@@ -1,0 +1,23 @@
+version: '3'
+
+networks:
+  emission-inventory:
+    driver: bridge
+
+services:
+  database: 
+    image: mysql:latest
+    container_name: emission-inventory-database
+    restart: always
+    volumes:
+      - ./data:/var/lib/mysql
+    env_file:
+      - .env
+    environment:
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    networks:
+      - emission-inventory
+    ports:
+      - "3306:3306"
+    
