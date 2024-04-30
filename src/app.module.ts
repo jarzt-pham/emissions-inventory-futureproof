@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FactorModule } from './features';
+import { FactorModule, InventoryModule } from './features';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Configuration } from './configuration';
 
@@ -9,6 +9,7 @@ import { Configuration } from './configuration';
   imports: [
     TypeOrmModule.forRoot(Configuration.TypeOrmConfiguration),
     FactorModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
