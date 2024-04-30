@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -57,6 +58,7 @@ export class InventoryController {
   }
 
   @Delete(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
+  @HttpCode(204)
   remove(@Param('id') id: ValidateUtils.FindOneParams) {
     return this.emissionSourceService.remove(+id);
   }
@@ -104,6 +106,16 @@ export class InventoryController {
       emissionConsumptionId: +emissionConsumptionId,
       updateEmissionConsumptionDto,
     });
+  }
+
+  @Delete(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
+  )
+  @HttpCode(204)
+  removeEmissionConsumption(
+    @Param('emission_consumption_id') emissionConsumptionId: string,
+  ) {
+    return this.emissionConsumptionService.remove(+emissionConsumptionId);
   }
 
   @Get(
