@@ -10,6 +10,13 @@ import { SimpleLinearRegression } from 'ml-regression';
 import { PredictionUtil } from './prediction.util';
 import { EmissionUtilException } from '../../exceptions';
 
+export namespace EmissionUtilType {
+  export enum PredictionByEnum {
+    AI = 'ai',
+    MANUAL = 'manual',
+  }
+}
+
 export type PredictionDTO = {
   year: number;
   prediction: number;
@@ -27,7 +34,9 @@ export class EmissionUtilService {
 
   private readonly _CURRENT_YEAR = new Date().getFullYear();
 
-  async getTotalEmissionEachYearFromSource(emissionSourceId: number): Promise<{
+  async getTotalEmissionEachYear(options?: {
+    emissionSourceId: number;
+  }): Promise<{
     consumptions: { year: number; consumption: number }[];
     consumptionMap: Map<number, number>;
   }> {
@@ -37,24 +46,29 @@ export class EmissionUtilService {
       emission_source_id: number;
     }[];
     try {
-      totalEmissionEachYearDto = await this._dataSource
+      const ormDao = this._dataSource
         .getRepository(EmissionConsumption)
         .createQueryBuilder('emissionConsumption')
         .innerJoin('emissionConsumption.fuel', 'fuel')
         .innerJoin('emissionConsumption.unit', 'unit')
         .innerJoin('emissionConsumption.emissionSource', 'emissionSource')
         .innerJoin('fuel.fuelUnits', 'fuelUnits')
-        .where('emissionConsumption.emissionSource.id = :emissionSourceId', {
-          emissionSourceId,
-        })
         .select([
-          'emissionSource.id as emission_source_id',
           'emissionConsumption.year as year',
           'sum(emissionConsumption.value * fuelUnits.emission_factor) as total_converted_factor',
         ])
-        .groupBy('emissionSource.id')
-        .addGroupBy('emissionConsumption.year')
-        .execute();
+        .groupBy('emissionConsumption.year');
+
+      if (options?.emissionSourceId) {
+        ormDao
+          .where('emissionConsumption.emissionSource.id = :emissionSourceId', {
+            emissionSourceId: options.emissionSourceId,
+          })
+          .addSelect('emissionSource.id as emission_source_id')
+          .addGroupBy('emissionSource.id');
+      }
+
+      totalEmissionEachYearDto = await ormDao.getRawMany();
     } catch (error) {
       this.logger.error(error.message);
       throw new InternalServerErrorException();
@@ -87,15 +101,17 @@ export class EmissionUtilService {
     return isExist;
   }
 
-  async predictedByAI({
-    emissionSourceId,
-    toYear,
-  }: {
-    emissionSourceId: number;
-    toYear: number;
-  }): Promise<PredictionDTO[]> {
+  toYear: number;
+  async predictedByAI(
+    toYear: number,
+    options?: {
+      emissionSourceId?: number;
+    },
+  ): Promise<PredictionDTO[]> {
     const { consumptions, consumptionMap } =
-      await this.getTotalEmissionEachYearFromSource(emissionSourceId);
+      await this.getTotalEmissionEachYear({
+        emissionSourceId: options?.emissionSourceId,
+      });
 
     this.isConsumedValueLastYearExist(consumptionMap);
 
@@ -117,15 +133,16 @@ export class EmissionUtilService {
     }));
   }
 
-  async predictedByManual({
-    emissionSourceId,
-    toYear,
-  }: {
-    emissionSourceId: number;
-    toYear: number;
-  }): Promise<PredictionDTO[]> {
+  async predictedByManual(
+    toYear: number,
+    options?: {
+      emissionSourceId?: number;
+    },
+  ): Promise<PredictionDTO[]> {
     const { consumptions, consumptionMap } =
-      await this.getTotalEmissionEachYearFromSource(emissionSourceId);
+      await this.getTotalEmissionEachYear({
+        emissionSourceId: options?.emissionSourceId,
+      });
 
     this.isConsumedValueLastYearExist(consumptionMap);
 
@@ -154,5 +171,54 @@ export class EmissionUtilService {
       year: item.year,
       prediction: +item.prediction.toFixed(3),
     }));
+  }
+
+  async predictionBy(
+    toYear: number,
+    options: {
+      by: EmissionUtilType.PredictionByEnum;
+      emissionSourceId?: number;
+    },
+  ) {
+    switch (options.by) {
+      case EmissionUtilType.PredictionByEnum.AI:
+        return this.predictedByAI(toYear, {
+          emissionSourceId: options.emissionSourceId,
+        });
+      case EmissionUtilType.PredictionByEnum.MANUAL:
+        return this.predictedByManual(toYear, {
+          emissionSourceId: options.emissionSourceId,
+        });
+    }
+  }
+
+  async totalEmissionMetrics(options: {
+    emissionSourceId?: number;
+    prediction: {
+      by: EmissionUtilType.PredictionByEnum;
+      toYear: number;
+    };
+  }) {
+    const { consumptions } = await this.getTotalEmissionEachYear();
+
+    const totalEmissionConsumption = consumptions.reduce(
+      (acc, item) => acc + item.consumption,
+      0,
+    );
+
+    let emissionPrediction: PredictionDTO[] = [];
+    emissionPrediction = await this.predictionBy(options.prediction.toYear, {
+      by: options.prediction.by,
+    });
+
+    let totalEmissionPrediction = 0;
+    emissionPrediction.forEach((item) => {
+      totalEmissionPrediction += item.prediction;
+    });
+
+    return {
+      consumption: totalEmissionConsumption,
+      prediction: totalEmissionPrediction,
+    };
   }
 }

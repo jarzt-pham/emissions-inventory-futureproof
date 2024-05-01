@@ -23,7 +23,10 @@ import {
   CreateEmissionReductionDto,
   UpdateEmissionReductionDto,
 } from './dto/emission-reduction';
-import { EmissionUtilService } from './services/emission-util';
+import {
+  EmissionUtilService,
+  EmissionUtilType,
+} from './services/emission-util';
 
 const ENDPOINT = {
   VERSION: 'v1',
@@ -134,7 +137,7 @@ export class InventoryController {
   @Get(
     `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/total`,
   )
-  totalEmission(
+  totalEmissionOfSource(
     @Param('id') emissionSourceId: string,
     @Query('year') year: number,
   ) {
@@ -198,17 +201,34 @@ export class InventoryController {
   )
   predictedByAI(
     @Param('id') emissionSourceId: string,
-    @Query('by') by: 'ai' | 'manual' = 'ai',
+    @Query('by')
+    by: EmissionUtilType.PredictionByEnum = EmissionUtilType.PredictionByEnum
+      .AI,
     @Query('to_year') toYear?: number,
   ) {
     const toYearInput = toYear ? +toYear : new Date().getFullYear();
 
-    const payload = {
+    return this._emissionUtil.predictionBy(toYearInput, {
+      by,
       emissionSourceId: +emissionSourceId,
-      toYear: toYearInput,
-    };
+    });
+  }
 
-    if (by === 'manual') return this._emissionUtil.predictedByManual(payload);
-    return this._emissionUtil.predictedByAI(payload);
+  //total-whole-inventory
+  @Get(`total-emission`)
+  async totalEmissionMetrics(
+    @Query('by')
+    by: EmissionUtilType.PredictionByEnum = EmissionUtilType.PredictionByEnum
+      .AI,
+    @Query('to_year') toYear?: number,
+  ) {
+    const toYearInput = toYear ? +toYear : new Date().getFullYear();
+
+    return this._emissionUtil.totalEmissionMetrics({
+      prediction: {
+        by,
+        toYear: toYearInput,
+      },
+    });
   }
 }
