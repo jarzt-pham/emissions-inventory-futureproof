@@ -52,3 +52,10 @@ export namespace EmissionReductionException {
     throw new NotFoundException(msg);
   };
 }
+
+export namespace EmissionUtilException {
+  export const ConsumedValueLastYearNotExist = () => {
+    const msg = `The consumed value of last year does not exist.`;
+    throw new NotFoundException(msg);
+  };
+}

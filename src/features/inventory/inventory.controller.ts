@@ -19,7 +19,11 @@ import {
 } from './dto/emisison-consumption';
 import { EmissionConsumptionService } from './services/emission-consumption/emission-consumption.service';
 import { EmissionReductionService } from './services/emission-reduction';
-import { CreateEmissionReductionDto, UpdateEmissionReductionDto } from './dto/emission-reduction';
+import {
+  CreateEmissionReductionDto,
+  UpdateEmissionReductionDto,
+} from './dto/emission-reduction';
+import { EmissionUtilService } from './services/emission-util';
 
 const ENDPOINT = {
   VERSION: 'v1',
@@ -28,15 +32,17 @@ const ENDPOINT = {
     ROOT: 'emission-sources',
     CONSUMPTION: 'consumptions',
     REDUCTION: 'reductions',
+    PREDICTION: 'predictions',
   },
 };
 
 @Controller(`${ENDPOINT.VERSION}/${ENDPOINT.ROOT}`)
 export class InventoryController {
   constructor(
-    private readonly emissionSourceService: EmissionSourceService,
-    private readonly emissionConsumptionService: EmissionConsumptionService,
-    private readonly emissionReductionService: EmissionReductionService,
+    private readonly _emissionSourceService: EmissionSourceService,
+    private readonly _emissionConsumptionService: EmissionConsumptionService,
+    private readonly _emissionReductionService: EmissionReductionService,
+    private readonly _emissionUtil: EmissionUtilService,
   ) {}
 
   //emission-source
@@ -44,17 +50,17 @@ export class InventoryController {
   createEmissionSource(
     @Body() createEmissionSourceDto: CreateEmissionSourceDto,
   ) {
-    return this.emissionSourceService.create(createEmissionSourceDto);
+    return this._emissionSourceService.create(createEmissionSourceDto);
   }
 
   @Get(ENDPOINT.EMISSiON_SOURCE.ROOT)
   findAllEmissionSource() {
-    return this.emissionSourceService.findAll();
+    return this._emissionSourceService.findAll();
   }
 
   @Get(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
   findOneEmissionSource(@Param('id') id: string) {
-    return this.emissionSourceService.findOne(+id);
+    return this._emissionSourceService.findOne(+id);
   }
 
   @Patch(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
@@ -62,13 +68,13 @@ export class InventoryController {
     @Param('id') id: string,
     @Body() updateEmissionSourceDto: UpdateEmissionSourceDto,
   ) {
-    return this.emissionSourceService.update(+id, updateEmissionSourceDto);
+    return this._emissionSourceService.update(+id, updateEmissionSourceDto);
   }
 
   @Delete(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
   @HttpCode(204)
   removeEmissionSource(@Param('id') id: string) {
-    return this.emissionSourceService.remove(+id);
+    return this._emissionSourceService.remove(+id);
   }
 
   //emission-consumption
@@ -79,7 +85,7 @@ export class InventoryController {
     @Param('id') emissionSourceId: string,
     @Body() createEmissionConsumptionDto: CreateEmissionConsumptionDto,
   ) {
-    return this.emissionConsumptionService.create({
+    return this._emissionConsumptionService.create({
       emissionSourceId: +emissionSourceId,
       createEmissionConsumptionDto,
     });
@@ -93,7 +99,7 @@ export class InventoryController {
     @Query('from_year') fromYear: number,
     @Query('to_year') toYear: number,
   ) {
-    return this.emissionConsumptionService.findAll({
+    return this._emissionConsumptionService.findAll({
       emissionSourceId: +emissionSourceId,
       fromYear,
       toYear,
@@ -108,7 +114,7 @@ export class InventoryController {
     @Param('emission_consumption_id') emissionConsumptionId: string,
     @Body() updateEmissionConsumptionDto: UpdateEmissionConsumptionDto,
   ) {
-    return this.emissionConsumptionService.update({
+    return this._emissionConsumptionService.update({
       emissionSourceId: +emissionSourceId,
       emissionConsumptionId: +emissionConsumptionId,
       updateEmissionConsumptionDto,
@@ -122,7 +128,7 @@ export class InventoryController {
   removeEmissionConsumption(
     @Param('emission_consumption_id') emissionConsumptionId: string,
   ) {
-    return this.emissionConsumptionService.remove(+emissionConsumptionId);
+    return this._emissionConsumptionService.remove(+emissionConsumptionId);
   }
 
   @Get(
@@ -132,7 +138,7 @@ export class InventoryController {
     @Param('id') emissionSourceId: string,
     @Query('year') year: number,
   ) {
-    return this.emissionConsumptionService.totalEmissionConsumption({
+    return this._emissionConsumptionService.totalEmissionConsumption({
       emissionSourceId: +emissionSourceId,
       year: year,
     });
@@ -146,7 +152,7 @@ export class InventoryController {
     @Param('id') emissionSourceId: string,
     @Body() createEmissionReductionDto: CreateEmissionReductionDto,
   ) {
-    return this.emissionReductionService.create({
+    return this._emissionReductionService.create({
       emissionSourceId: +emissionSourceId,
       createEmissionReductionDto,
     });
@@ -156,7 +162,7 @@ export class InventoryController {
     `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
   )
   findAllEmissionReduction(@Param('id') emissionSourceId: string) {
-    return this.emissionReductionService.findAll({
+    return this._emissionReductionService.findAll({
       emissionSourceId: +emissionSourceId,
     });
   }
@@ -169,7 +175,7 @@ export class InventoryController {
     @Param('emission_reduction_id') emissionReductionId: string,
     @Body() updateEmissionReductionDto: UpdateEmissionReductionDto,
   ) {
-    return this.emissionReductionService.update({
+    return this._emissionReductionService.update({
       emissionSourceId: +emissionSourceId,
       emissionReductionId: +emissionReductionId,
       updateEmissionReductionDto: updateEmissionReductionDto,
@@ -183,6 +189,26 @@ export class InventoryController {
   removeEmissionReduction(
     @Param('emission_reduction_id') emissionReductionId: string,
   ) {
-    return this.emissionReductionService.remove(+emissionReductionId);
+    return this._emissionReductionService.remove(+emissionReductionId);
+  }
+
+  //emission-util
+  @Get(
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.PREDICTION}`,
+  )
+  predictedByAI(
+    @Param('id') emissionSourceId: string,
+    @Query('by') by: 'ai' | 'manual' = 'ai',
+    @Query('to_year') toYear?: number,
+  ) {
+    const toYearInput = toYear ? +toYear : new Date().getFullYear();
+
+    const payload = {
+      emissionSourceId: +emissionSourceId,
+      toYear: toYearInput,
+    };
+
+    if (by === 'manual') return this._emissionUtil.predictedByManual(payload);
+    return this._emissionUtil.predictedByAI(payload);
   }
 }

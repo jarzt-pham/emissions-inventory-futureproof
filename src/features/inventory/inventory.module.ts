@@ -6,12 +6,13 @@ import { InventoryController } from './inventory.controller';
 import { EmissionSourceService } from './services/emission-source';
 import { EmissionConsumptionService } from './services/emission-consumption/emission-consumption.service';
 import { EmissionReductionService } from './services/emission-reduction';
+import { EmissionUtilService } from './services/emission-util';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Fuel, Unit, EmissionSource, EmissionConsumption, EmissionReduction]),
   ],
   controllers: [InventoryController],
-  providers: [EmissionSourceService, EmissionConsumptionService, EmissionReductionService],
+  providers: [EmissionSourceService, EmissionConsumptionService, EmissionReductionService, EmissionUtilService],
 })
 export class InventoryModule {}
