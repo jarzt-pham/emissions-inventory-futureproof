@@ -8,7 +8,7 @@ This document provides documentation for the APIs of our project. The APIs allow
 
 To import the [POSTMAN](https://www.postman.com/) collection, follow these steps:
 
-1. Get the Postman collection file from [link-to-collection](./emisison-inventory.postman_collection.json).
+1. Get the Postman collection file from [link-to-collection](./v2-emisison-inventory.postman_collection.json).
 2. Open Postman.
 3. Click on the "Import" button in the top-left corner.
 4. Choose the downloaded collection file.

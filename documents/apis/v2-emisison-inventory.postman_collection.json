@@ -127,7 +127,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions/:consumptions_id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:id",
 							"host": [
 								"localhost"
 							],
@@ -136,18 +136,12 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id",
-								"consumptions",
-								":consumptions_id"
+								":id"
 							],
 							"variable": [
 								{
 									"key": "id",
 									"value": "1"
-								},
-								{
-									"key": "consumptions_id",
-									"value": "6"
 								}
 							]
 						}
@@ -186,33 +180,6 @@
 									"key": "to_year",
 									"value": "2024"
 								}
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "find-one-by-id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"v1",
-								"inventory",
-								"emission-sources",
-								":id"
 							],
 							"variable": [
 								{
@@ -405,33 +372,6 @@
 					"response": []
 				},
 				{
-					"name": "find-one-by-id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"v1",
-								"inventory",
-								"emission-sources",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "create",
 					"request": {
 						"method": "POST",
@@ -516,7 +456,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/reductions/:emission_reduction_id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:id/reductions/:reduction_id",
 							"host": [
 								"localhost"
 							],
@@ -527,7 +467,7 @@
 								"emission-sources",
 								":id",
 								"reductions",
-								":emission_reduction_id"
+								":reduction_id"
 							],
 							"variable": [
 								{
@@ -535,7 +475,7 @@
 									"value": "1"
 								},
 								{
-									"key": "emission_reduction_id",
+									"key": "reduction_id",
 									"value": "1"
 								}
 							]
@@ -549,7 +489,7 @@
 			"name": "emission-util",
 			"item": [
 				{
-					"name": "predictin",
+					"name": "prediction",
 					"request": {
 						"method": "GET",
 						"header": [],
