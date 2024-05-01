@@ -5,6 +5,29 @@ networks:
     driver: bridge
 
 services:
+  app: 
+    image: node:latest
+    container_name: emission-inventory
+    restart: always
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - emission-inventory
+    depends_on:
+      - database
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    command: npm install && npm run start:dev
+
   database: 
     image: mysql:latest
     container_name: emission-inventory-database
