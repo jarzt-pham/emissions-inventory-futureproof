@@ -34,7 +34,7 @@ const truncateFactorTable = async (dataSource: DataSource) => {
     await queryRunner.commitTransaction();
     return true;
   } catch (err) {
-    console.log({ err });
+    console.error({ err });
     await queryRunner.rollbackTransaction();
     return runTruncateFailed;
   } finally {
@@ -97,7 +97,7 @@ export const runFactorSeed = async (dataSource: DataSource) => {
 
     await queryRunner.commitTransaction();
   } catch (err) {
-    console.log({ err });
+    console.error({ err });
     await queryRunner.rollbackTransaction();
   } finally {
     await queryRunner.release();
