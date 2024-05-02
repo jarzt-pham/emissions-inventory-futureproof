@@ -58,4 +58,9 @@ export namespace EmissionUtilException {
     const msg = `The consumed value of last year does not exist.`;
     throw new NotFoundException(msg);
   };
+
+  export const NotEnoughDataForPrediction = () => {
+    const msg = `Not enough data for prediction. Please input more data.`;
+    throw new HttpException(msg, 400);
+  };
 }

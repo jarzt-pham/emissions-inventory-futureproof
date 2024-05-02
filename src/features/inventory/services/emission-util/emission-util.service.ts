@@ -33,6 +33,7 @@ export class EmissionUtilService {
   ) {}
 
   private readonly _CURRENT_YEAR = new Date().getFullYear();
+  private readonly _MINIMUM_DATA_FOR_PREDICTION = 2;
 
   async getTotalEmissionEachYear(options?: {
     emissionSourceId: number;
@@ -135,6 +136,9 @@ export class EmissionUtilService {
       await this.getTotalEmissionEachYear({
         emissionSourceId: options?.emissionSourceId,
       });
+
+    if (consumptions.length < this._MINIMUM_DATA_FOR_PREDICTION)
+      throw EmissionUtilException.NotEnoughDataForPrediction();
 
     this.isConsumedValueLastYearExist(consumptionMap);
 
