@@ -324,3 +324,10 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 > | `to_year` | no required | int        | The end of year which you want to predictions                                                 |
 
 </details>
+
+
+## Related Documents
+
+- Instructions Documentation: [link](../../README.md)
+- Project Documentation: [link](../core/readme.md)
+- Database Diagram: [link](./documents/core/db-diagram.png)

@@ -74,4 +74,10 @@ You can import and read all the apis in this project at [here](./documents/apis/
 
 ### Additional
 
-Read the estimation and business, workflow every task to do this project at [here](./documents/timeline/readme.md)
+Read the estimation and business, workflow every task to do this project at [here](./documents/core/readme.md)
+
+## Related Documents
+
+- APIs Documentation: [link](./documents/apis/readme.md)
+- Project Documentation: [link](./documents/core/readme.md)
+- Database Diagram: [link](./documents/core/db-diagram.png)
