@@ -270,7 +270,11 @@ export class EmissionConsumptionService {
         .innerJoin('emissionConsumption.fuel', 'fuel')
         .innerJoin('emissionConsumption.unit', 'unit')
         .innerJoin('emissionConsumption.emissionSource', 'emissionSource')
-        .innerJoin('fuel.fuelUnits', 'fuelUnits')
+        .innerJoin(
+          'fuel.fuelUnits',
+          'fuelUnits',
+          'fuelUnits.unitId = unit.id and fuelUnits.fuelId = fuel.id',
+        )
         .where('emissionConsumption.emissionSource.id = :emissionSourceId', {
           emissionSourceId,
         })
@@ -330,13 +334,13 @@ export class EmissionConsumptionService {
 
   async totalEmissionConsumption({
     emissionSourceId,
-    year,
+    fromYear,
   }: {
     emissionSourceId: number;
-    year: number;
+    fromYear: number;
   }): Promise<TotalEmissionDto> {
     let totalEmissionDto: {
-      year: number;
+      from_year: number;
       total_converted_factor: number;
       emission_source_id: number;
     };
@@ -347,14 +351,20 @@ export class EmissionConsumptionService {
         .innerJoin('emissionConsumption.fuel', 'fuel')
         .innerJoin('emissionConsumption.unit', 'unit')
         .innerJoin('emissionConsumption.emissionSource', 'emissionSource')
-        .innerJoin('fuel.fuelUnits', 'fuelUnits')
+        .innerJoin(
+          'fuel.fuelUnits',
+          'fuelUnits',
+          'fuelUnits.unitId = unit.id and fuelUnits.fuelId = fuel.id',
+        )
         .where('emissionConsumption.emissionSource.id = :emissionSourceId', {
           emissionSourceId,
         })
-        .andWhere('emissionConsumption.year = :year', { year })
+        .andWhere('emissionConsumption.year = :from_year', {
+          from_year: fromYear,
+        })
         .select([
           'emissionSource.id as emission_source_id',
-          'emissionConsumption.year as year',
+          'emissionConsumption.year as from_year',
           'sum(emissionConsumption.value * fuelUnits.emission_factor) as total_converted_factor',
         ])
         .groupBy('emissionSource.id')
@@ -366,13 +376,13 @@ export class EmissionConsumptionService {
 
     if (!totalEmissionDto)
       return {
-        year,
+        from_year: fromYear,
         total_converted_factor: null,
         emission_source_id: emissionSourceId,
       };
 
     return {
-      year: totalEmissionDto.year,
+      from_year: totalEmissionDto.from_year,
       total_converted_factor: totalEmissionDto.total_converted_factor,
       emission_source_id: totalEmissionDto.emission_source_id,
     };
@@ -450,7 +460,7 @@ export class EmissionConsumptionService {
         id: emissionConsumption.fuel.id,
         name: emissionConsumption.fuel.name,
       },
-      
+
       unit: {
         id: emissionConsumption.unit.id,
         name: emissionConsumption.unit.name,
@@ -458,11 +468,18 @@ export class EmissionConsumptionService {
     };
   }
 
-  async remove(id: number) {
-    await this.isExist(id);
+  async remove({
+    emissionSourceId,
+    emissionConsumptionId,
+  }: {
+    emissionSourceId: number;
+    emissionConsumptionId: number;
+  }) {
+    await this._emissionSourceService.isExist(emissionSourceId);
+    await this.isExist(emissionConsumptionId);
 
     try {
-      await this._emissionConsumptionRepo.delete(id);
+      await this._emissionConsumptionRepo.delete(emissionConsumptionId);
     } catch (error) {
       this.logger.error(error.message);
       throw new InternalServerErrorException();

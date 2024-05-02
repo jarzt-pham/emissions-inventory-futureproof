@@ -52,7 +52,11 @@ export class EmissionUtilService {
         .innerJoin('emissionConsumption.fuel', 'fuel')
         .innerJoin('emissionConsumption.unit', 'unit')
         .innerJoin('emissionConsumption.emissionSource', 'emissionSource')
-        .innerJoin('fuel.fuelUnits', 'fuelUnits')
+        .innerJoin(
+          'fuel.fuelUnits',
+          'fuelUnits',
+          'fuelUnits.unitId = unit.id and fuelUnits.fuelId = fuel.id',
+        )
         .select([
           'emissionConsumption.year as year',
           'sum(emissionConsumption.value * fuelUnits.emission_factor) as total_converted_factor',
@@ -109,6 +113,7 @@ export class EmissionUtilService {
     },
   ) {
     switch (options.by) {
+      default:
       case EmissionUtilType.PredictionByEnum.AI:
         return this.predictedByAI(toYear, {
           emissionSourceId: options.emissionSourceId,

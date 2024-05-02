@@ -84,7 +84,7 @@ export class EmissionReductionService {
       throw new InternalServerErrorException();
     }
 
-    if (!emissionReduction) EmissionReductionException.NotExist(id);
+    if (!emissionReduction) throw EmissionReductionException.NotExist(id);
 
     return emissionReduction;
   }
@@ -187,7 +187,11 @@ export class EmissionReductionService {
         .innerJoin('emissionReduction.fuel', 'fuel')
         .innerJoin('emissionReduction.unit', 'unit')
         .innerJoin('emissionReduction.emissionSource', 'emissionSource')
-        .innerJoin('fuel.fuelUnits', 'fuelUnits')
+        .innerJoin(
+          'fuel.fuelUnits',
+          'fuelUnits',
+          'fuelUnits.unitId = unit.id and fuelUnits.fuelId = fuel.id',
+        )
         .where('emissionReduction.emissionSource.id = :emissionSourceId', {
           emissionSourceId,
         })
@@ -334,11 +338,18 @@ export class EmissionReductionService {
     };
   }
 
-  async remove(id: number) {
-    await this.isExist(id);
+  async remove({
+    emissionSourceId,
+    emissionReductionId,
+  }: {
+    emissionSourceId: number;
+    emissionReductionId: number;
+  }) {
+    await this._emissionSourceService.isExist(emissionSourceId);
+    await this.isExist(emissionReductionId);
 
     try {
-      await this._emissionReductionRepo.delete(id);
+      await this._emissionReductionRepo.delete(emissionReductionId);
     } catch (error) {
       this.logger.error(error.message);
       throw new InternalServerErrorException();

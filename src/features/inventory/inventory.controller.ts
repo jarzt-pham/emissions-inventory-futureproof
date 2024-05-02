@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateEmissionSourceDto } from './dto/emission-source/create-emission-source.dto';
 import { UpdateEmissionSourceDto } from './dto/emission-source/update-emission-source.dto';
@@ -61,156 +62,168 @@ export class InventoryController {
     return this._emissionSourceService.findAll();
   }
 
-  @Get(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
-  findOneEmissionSource(@Param('id') id: string) {
-    return this._emissionSourceService.findOne(+id);
+  @Get(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id`)
+  findOneEmissionSource(@Param() param: ValidateUtils.EmissionSource) {
+    return this._emissionSourceService.findOne(+param.emission_source_id);
   }
 
-  @Patch(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
+  @Patch(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id`)
   updateEmissionSource(
-    @Param('id') id: string,
+    @Param() param: ValidateUtils.EmissionSource,
     @Body() updateEmissionSourceDto: UpdateEmissionSourceDto,
   ) {
-    return this._emissionSourceService.update(+id, updateEmissionSourceDto);
+    return this._emissionSourceService.update(
+      +param.emission_source_id,
+      updateEmissionSourceDto,
+    );
   }
 
-  @Delete(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id`)
+  @Delete(`${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id`)
   @HttpCode(204)
-  removeEmissionSource(@Param('id') id: string) {
-    return this._emissionSourceService.remove(+id);
+  removeEmissionSource(@Param() param: ValidateUtils.EmissionSource) {
+    return this._emissionSourceService.remove(+param.emission_source_id);
   }
 
   //emission-consumption
   @Post(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}`,
   )
   createEmissionConsumption(
-    @Param('id') emissionSourceId: string,
+    @Param() param: ValidateUtils.EmissionSource,
     @Body() createEmissionConsumptionDto: CreateEmissionConsumptionDto,
   ) {
     return this._emissionConsumptionService.create({
-      emissionSourceId: +emissionSourceId,
+      emissionSourceId: +param.emission_source_id,
       createEmissionConsumptionDto,
     });
   }
 
   @Get(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}`,
   )
   findAllEmissionConsumption(
-    @Param('id') emissionSourceId: string,
-    @Query('from_year') fromYear: number,
-    @Query('to_year') toYear: number,
+    @Param() param: ValidateUtils.EmissionSource,
+    @Query() query: ValidateUtils.PeriodYearInThePast,
   ) {
     return this._emissionConsumptionService.findAll({
-      emissionSourceId: +emissionSourceId,
-      fromYear,
-      toYear,
+      emissionSourceId: +param.emission_source_id,
+      fromYear: +query.from_year,
+      toYear: +query.to_year,
     });
   }
 
   @Patch(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
   )
   updateEmissionConsumption(
-    @Param('id') emissionSourceId: string,
-    @Param('emission_consumption_id') emissionConsumptionId: string,
+    @Param()
+    param: ValidateUtils.EmissionSource & ValidateUtils.EmissionConsumption,
     @Body() updateEmissionConsumptionDto: UpdateEmissionConsumptionDto,
   ) {
     return this._emissionConsumptionService.update({
-      emissionSourceId: +emissionSourceId,
-      emissionConsumptionId: +emissionConsumptionId,
+      emissionSourceId: +param.emission_source_id,
+      emissionConsumptionId: +param.emission_consumption_id,
       updateEmissionConsumptionDto,
     });
   }
 
   @Delete(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/:emission_consumption_id`,
   )
   @HttpCode(204)
   removeEmissionConsumption(
-    @Param('emission_consumption_id') emissionConsumptionId: string,
+    @Param()
+    param: ValidateUtils.EmissionSource & ValidateUtils.EmissionConsumption,
   ) {
-    return this._emissionConsumptionService.remove(+emissionConsumptionId);
+    return this._emissionConsumptionService.remove({
+      emissionSourceId: +param.emission_source_id,
+      emissionConsumptionId: +param.emission_consumption_id,
+    });
   }
 
   @Get(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/total`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.CONSUMPTION}/total`,
   )
   totalEmissionOfSource(
-    @Param('id') emissionSourceId: string,
-    @Query('year') year: number,
+    @Param() param: ValidateUtils.EmissionSource,
+    @Query() query: ValidateUtils.FromYear,
   ) {
     return this._emissionConsumptionService.totalEmissionConsumption({
-      emissionSourceId: +emissionSourceId,
-      year: year,
+      emissionSourceId: +param.emission_source_id,
+      fromYear: +query.from_year,
     });
   }
 
   //emission-consumption
   @Post(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
   )
   createEmissionReduction(
-    @Param('id') emissionSourceId: string,
+    @Param() param: ValidateUtils.EmissionSource,
     @Body() createEmissionReductionDto: CreateEmissionReductionDto,
   ) {
     return this._emissionReductionService.create({
-      emissionSourceId: +emissionSourceId,
+      emissionSourceId: +param.emission_source_id,
       createEmissionReductionDto,
     });
   }
 
   @Get(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}`,
   )
-  findAllEmissionReduction(@Param('id') emissionSourceId: string) {
+  findAllEmissionReduction(@Param() param: ValidateUtils.EmissionSource) {
     return this._emissionReductionService.findAll({
-      emissionSourceId: +emissionSourceId,
+      emissionSourceId: +param.emission_source_id,
     });
   }
 
   @Patch(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}/:emission_reduction_id`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}/:emission_reduction_id`,
   )
   updateEmissionReduction(
-    @Param('id') emissionSourceId: string,
-    @Param('emission_reduction_id') emissionReductionId: string,
+    @Param()
+    param: ValidateUtils.EmissionSource & ValidateUtils.EmissionReduction,
     @Body() updateEmissionReductionDto: UpdateEmissionReductionDto,
   ) {
     return this._emissionReductionService.update({
-      emissionSourceId: +emissionSourceId,
-      emissionReductionId: +emissionReductionId,
+      emissionSourceId: +param.emission_source_id,
+      emissionReductionId: +param.emission_reduction_id,
       updateEmissionReductionDto: updateEmissionReductionDto,
     });
   }
 
   @Delete(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}/:emission_reduction_id`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.REDUCTION}/:emission_reduction_id`,
   )
   @HttpCode(204)
   removeEmissionReduction(
-    @Param('emission_reduction_id') emissionReductionId: string,
+    @Param()
+    param: ValidateUtils.EmissionSource & ValidateUtils.EmissionReduction,
   ) {
-    return this._emissionReductionService.remove(+emissionReductionId);
+    return this._emissionReductionService.remove({
+      emissionReductionId: +param.emission_reduction_id,
+      emissionSourceId: +param.emission_source_id,
+    });
   }
 
   //emission-util
   @Get(
-    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:id/${ENDPOINT.EMISSiON_SOURCE.PREDICTION}`,
+    `${ENDPOINT.EMISSiON_SOURCE.ROOT}/:emission_source_id/${ENDPOINT.EMISSiON_SOURCE.PREDICTION}`,
   )
   predictedByAI(
-    @Param('id') emissionSourceId: string,
-    @Query('by')
+    @Param() param: ValidateUtils.EmissionSource,
+    @Param('by')
     by: EmissionUtilType.PredictionByEnum = EmissionUtilType.PredictionByEnum
       .AI,
-    @Query('to_year') toYear?: number,
+    @Query() query: ValidateUtils.PredictionPeriodYear,
   ) {
-    const toYearInput = toYear ? +toYear : new Date().getFullYear();
+    const toYearInput = query.to_year
+      ? +query.to_year
+      : new Date().getFullYear();
 
     return this._emissionUtil.predictionBy(toYearInput, {
-      by,
-      emissionSourceId: +emissionSourceId,
+      by: by,
+      emissionSourceId: +param.emission_source_id,
     });
   }
 
@@ -220,9 +233,11 @@ export class InventoryController {
     @Query('by')
     by: EmissionUtilType.PredictionByEnum = EmissionUtilType.PredictionByEnum
       .AI,
-    @Query('to_year') toYear?: number,
+    @Query() query?: ValidateUtils.PartialPeriodYearInThePast,
   ) {
-    const toYearInput = toYear ? +toYear : new Date().getFullYear();
+    const toYearInput = query.to_year
+      ? +query.to_year
+      : new Date().getFullYear();
 
     return this._emissionUtil.totalEmissionMetrics({
       prediction: {
