@@ -31,7 +31,7 @@ git clone https://github.com/jarzt-pham/emissions-inventory-futureproof.git
 
    Install [here](https://dev.mysql.com/downloads/installer/)
 
-   > If you have Docker, you can skip this step, in a [docker-compose.yaml](./docker-compose.yaml), I have wrote a mysql.
+   > If you have Docker, you can skip this step, in a [docker-compose.yaml](./docker-compose.yaml), I have written a mysql container.
 
 ---
 
