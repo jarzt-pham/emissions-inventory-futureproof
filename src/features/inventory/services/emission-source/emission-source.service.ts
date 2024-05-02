@@ -80,7 +80,6 @@ export class EmissionSourceService {
     const entity = await this._emissionSourceRepo.findOneBy({ id });
 
     entity.update(updateEmissionSourceDto);
-    
 
     try {
       await this._emissionSourceRepo.update(+id, entity);
@@ -92,8 +91,17 @@ export class EmissionSourceService {
     return EmissionSourceService.fromModelToDto(entity);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} emissionSource`;
+  async remove(id: number) {
+    await this.isExist(id);
+
+    try {
+      await this._emissionSourceRepo.delete(id);
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new InternalServerErrorException();
+    }
+
+    return;
   }
 
   async isExist(id: number) {
