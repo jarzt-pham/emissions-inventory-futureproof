@@ -101,7 +101,25 @@ export class EmissionUtilService {
     return isExist;
   }
 
-  toYear: number;
+  async predictionBy(
+    toYear: number,
+    options: {
+      by: EmissionUtilType.PredictionByEnum;
+      emissionSourceId?: number;
+    },
+  ) {
+    switch (options.by) {
+      case EmissionUtilType.PredictionByEnum.AI:
+        return this.predictedByAI(toYear, {
+          emissionSourceId: options.emissionSourceId,
+        });
+      case EmissionUtilType.PredictionByEnum.MANUAL:
+        return this.predictedByManual(toYear, {
+          emissionSourceId: options.emissionSourceId,
+        });
+    }
+  }
+
   async predictedByAI(
     toYear: number,
     options?: {
@@ -171,25 +189,6 @@ export class EmissionUtilService {
       year: item.year,
       prediction: +item.prediction.toFixed(3),
     }));
-  }
-
-  async predictionBy(
-    toYear: number,
-    options: {
-      by: EmissionUtilType.PredictionByEnum;
-      emissionSourceId?: number;
-    },
-  ) {
-    switch (options.by) {
-      case EmissionUtilType.PredictionByEnum.AI:
-        return this.predictedByAI(toYear, {
-          emissionSourceId: options.emissionSourceId,
-        });
-      case EmissionUtilType.PredictionByEnum.MANUAL:
-        return this.predictedByManual(toYear, {
-          emissionSourceId: options.emissionSourceId,
-        });
-    }
   }
 
   async totalEmissionMetrics(options: {
