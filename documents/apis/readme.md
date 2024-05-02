@@ -8,13 +8,30 @@ This document provides documentation for the APIs of our project. The APIs allow
 
 To import the [POSTMAN](https://www.postman.com/) collection, follow these steps:
 
-1. Get the Postman collection file from [link-to-collection](./v2-emisison-inventory.postman_collection.json).
+1. Get the v5 Postman collection file from [link-to-collection](./v5-emisison-inventory.postman_collection.json).
 2. Open Postman.
 3. Click on the "Import" button in the top-left corner.
 4. Choose the downloaded collection file.
 5. The collection will be imported into your Postman workspace.
 
 ## API Endpoints
+
+## Factor
+
+<details>
+
+#### List all
+
+<details>
+ <summary><code>GET</code> <code><b>/v1</b></code> <code>/factors</code></summary>
+
+##### Parameters
+
+> None
+
+## </details>
+
+## </details>
 
 ## Inventory
 
@@ -36,13 +53,13 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Find one by id
 
 <details>
- <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code></summary>
+ <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                  |
-> | ---- | -------- | --------- | ---------------------------- |
-> | `id` | required | int       | The specific emission source |
+> | name                 | type     | data type | description                  |
+> | -------------------- | -------- | --------- | ---------------------------- |
+> | `emission_source_id` | required | int       | The specific emission source |
 
 ## </details>
 
@@ -66,13 +83,13 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Update
 
 <details>
- <summary><code>PATCH</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code></summary>
+ <summary><code>PATCH</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                  |
-> | ---- | -------- | --------- | ---------------------------- |
-> | `id` | required | int       | The specific emission source |
+> | name                 | type     | data type | description                  |
+> | -------------------- | -------- | --------- | ---------------------------- |
+> | `emission_source_id` | required | int       | The specific emission source |
 
 ##### Body
 
@@ -85,13 +102,13 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Delete
 
 <details>
- <summary><code>DELETE</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code></summary>
+ <summary><code>DELETE</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                  |
-> | ---- | -------- | --------- | ---------------------------- |
-> | `id` | required | int       | The specific emission source |
+> | name                 | type     | data type | description                  |
+> | -------------------- | -------- | --------- | ---------------------------- |
+> | `emission_source_id` | required | int       | The specific emission source |
 
 </details>
 
@@ -106,52 +123,52 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### List all
 
 <details>
- <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/consumptions</code></summary>
+ <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/consumptions</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                   |
-> | ---- | -------- | --------- | ----------------------------- |
-> | `id` | required | int       | A specific of emission source |
+> | name                 | type     | data type | description                   |
+> | -------------------- | -------- | --------- | ----------------------------- |
+> | `emission_source_id` | required | int       | A specific of emission source |
 
 ##### Query Parameter
 
-> | name        | type     | data type | description |
-> | ----------- | -------- | --------- | ----------- |
-> | `from_year` | required | int       | Start year  |
-> | `to_year`   | required | int       | End year    |
+> | name        | type     | data type | description                                        |
+> | ----------- | -------- | --------- | -------------------------------------------------- |
+> | `from_year` | required | int       | From year which you want to list (pass to current) |
+> | `to_year`   | required | int       | From year which you want to list (pass to current) |
 
 ## </details>
 
 #### Total emission
 
 <details>
- <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/consumptions</code> <code>/total</code></summary>
+ <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/consumptions</code> <code>/total</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                   |
-> | ---- | -------- | --------- | ----------------------------- |
-> | `id` | required | int       | A specific of emission source |
+> | name                 | type     | data type | description                   |
+> | -------------------- | -------- | --------- | ----------------------------- |
+> | `emission_source_id` | required | int       | A specific of emission source |
 
 ##### Query Parameter
 
-> | name   | type     | data type | description                        |
-> | ------ | -------- | --------- | ---------------------------------- |
-> | `year` | required | int       | a Year which you want to get total |
+> | name        | type     | data type | description                        |
+> | ----------- | -------- | --------- | ---------------------------------- |
+> | `from_year` | required | int       | a Year which you want to get total |
 
 ## </details>
 
 #### Creating
 
 <details>
- <summary><code>POST</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/consumptions</code></summary>
+ <summary><code>POST</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/consumptions</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                   |
-> | ---- | -------- | --------- | ----------------------------- |
-> | `id` | required | int       | A specific of emission source |
+> | name                 | type     | data type | description                   |
+> | -------------------- | -------- | --------- | ----------------------------- |
+> | `emission_source_id` | required | int       | A specific of emission source |
 
 ##### Body
 
@@ -167,14 +184,14 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Update
 
 <details>
- <summary><code>PATCH</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/consumptions</code> <code>/:consumption_id</code></summary>
+ <summary><code>PATCH</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/consumptions</code> <code>/:consumption_id</code></summary>
 
 ##### Parameters
 
-> | name             | type     | data type | description                       |
-> | ---------------- | -------- | --------- | --------------------------------- |
-> | `id`             | required | int       | The specific emission source      |
-> | `consumption_id` | required | int       | The specific emission consumption |
+> | name                      | type     | data type | description                       |
+> | ------------------------- | -------- | --------- | --------------------------------- |
+> | `emission_source_id`      | required | int       | The specific emission source      |
+> | `emission_consumption_id` | required | int       | The specific emission consumption |
 
 ##### Body
 
@@ -190,14 +207,14 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Delete
 
 <details>
- <summary><code>DELETE</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/consumptions</code> <code>/:consumption_id</code></summary>
+ <summary><code>DELETE</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/consumptions</code> <code>/:emission_consumption_id</code></summary>
 
 ##### Parameters
 
-> | name             | type     | data type | description                       |
-> | ---------------- | -------- | --------- | --------------------------------- |
-> | `id`             | required | int       | The specific emission source      |
-> | `consumption_id` | required | int       | The specific emission consumption |
+> | name                      | type     | data type | description                       |
+> | ------------------------- | -------- | --------- | --------------------------------- |
+> | `emission_source_id`      | required | int       | The specific emission source      |
+> | `emission_consumption_id` | required | int       | The specific emission consumption |
 
 </details>
 
@@ -212,26 +229,26 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### List all
 
 <details>
- <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/reductions</code></summary>
+ <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/reductions</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                   |
-> | ---- | -------- | --------- | ----------------------------- |
-> | `id` | required | int       | A specific of emission source |
+> | name                 | type     | data type | description                   |
+> | -------------------- | -------- | --------- | ----------------------------- |
+> | `emission_source_id` | required | int       | A specific of emission source |
 
 ## </details>
 
 #### Creating
 
 <details>
- <summary><code>POST</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/reductions</code></summary>
+ <summary><code>POST</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/reductions</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                   |
-> | ---- | -------- | --------- | ----------------------------- |
-> | `id` | required | int       | A specific of emission source |
+> | name                 | type     | data type | description                   |
+> | -------------------- | -------- | --------- | ----------------------------- |
+> | `emission_source_id` | required | int       | A specific of emission source |
 
 ##### Body
 
@@ -248,14 +265,14 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Update
 
 <details>
- <summary><code>PATCH</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/reductions</code> <code>/:reduction_id</code></summary>
+ <summary><code>PATCH</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/reductions</code> <code>/:reduction_id</code></summary>
 
 ##### Parameters
 
-> | name           | type     | data type | description                     |
-> | -------------- | -------- | --------- | ------------------------------- |
-> | `id`           | required | int       | The specific emission source    |
-> | `reduction_id` | required | int       | The specific emission reduction |
+> | name                 | type     | data type | description                     |
+> | -------------------- | -------- | --------- | ------------------------------- |
+> | `emission_source_id` | required | int       | The specific emission source    |
+> | `reduction_id`       | required | int       | The specific emission reduction |
 
 ##### Body
 
@@ -272,14 +289,14 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Delete
 
 <details>
- <summary><code>DELETE</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/consumptions</code> <code>/:reduction_id</code></summary>
+ <summary><code>DELETE</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/consumptions</code> <code>/:reduction_id</code></summary>
 
 ##### Parameters
 
-> | name           | type     | data type | description                     |
-> | -------------- | -------- | --------- | ------------------------------- |
-> | `id`           | required | int       | The specific emission source    |
-> | `reduction_id` | required | int       | The specific emission reduction |
+> | name                 | type     | data type | description                     |
+> | -------------------- | -------- | --------- | ------------------------------- |
+> | `emission_source_id` | required | int       | The specific emission source    |
+> | `reduction_id`       | required | int       | The specific emission reduction |
 
 </details>
 
@@ -294,20 +311,20 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 #### Prediction
 
 <details>
- <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:id</code> <code>/predictions</code></summary>
+ <summary><code>GET</code> <code><b>/v1</b></code> <code>/inventory/emission-sources</code> <code>/:emission_source_id</code> <code>/predictions</code></summary>
 
 ##### Parameters
 
-> | name | type     | data type | description                   |
-> | ---- | -------- | --------- | ----------------------------- |
-> | `id` | required | int       | A specific of emission source |
+> | name                 | type     | data type | description                   |
+> | -------------------- | -------- | --------- | ----------------------------- |
+> | `emission_source_id` | required | int       | A specific of emission source |
 
 ##### Query Parameter
 
-> | name      | type        | data type  | description                                                                                   |
-> | --------- | ----------- | ---------- | --------------------------------------------------------------------------------------------- |
-> | `by`      | no required | ai, manual | This api has 2 options to calculate predicted value use model ai and algo growth rate formula |
-> | `to_year` | no required | int        | The end of year which you want to predictions                                                 |
+> | name      | type        | data type        | description                                                                                   |
+> | --------- | ----------- | ---------------- | --------------------------------------------------------------------------------------------- |
+> | `by`      | no required | enum(ai, manual) | This api has 2 options to calculate predicted value use model ai and algo growth rate formula |
+> | `to_year` | required    | int              | The end of year which you want to predictions                                                 |
 
 ## </details>
 
@@ -321,10 +338,9 @@ To import the [POSTMAN](https://www.postman.com/) collection, follow these steps
 > | name      | type        | data type  | description                                                                                   |
 > | --------- | ----------- | ---------- | --------------------------------------------------------------------------------------------- |
 > | `by`      | no required | ai, manual | This api has 2 options to calculate predicted value use model ai and algo growth rate formula |
-> | `to_year` | no required | int        | The end of year which you want to predictions                                                 |
+> | `to_year` | required    | int        | The end of year which you want to predictions                                                 |
 
 </details>
-
 
 ## Related Documents
 

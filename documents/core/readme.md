@@ -97,7 +97,7 @@ With Prediction feature, i implemented with 2 ways:
 
 ## Additional 
 
-In this project, due to time constraints, I have simplified the structure and cannot fully implement certain aspects such as the DAO pattern, database indexing, table constraint or additional features in the API such as sorting and paging, etc.
+In this project, due to time constraints, I have simplified the structure and cannot fully implement certain aspects such as the DAO pattern, database indexing, table constraint or additional features in the API such as sorting and paging, full validation for query string , parameter etc.
 
 When you read this line, we will conclude the documentation for this project. I am very grateful to the team and the company for giving me the time and opportunity to test my skills and learn about the company.
 

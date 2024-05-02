@@ -35,7 +35,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id",
 							"host": [
 								"localhost"
 							],
@@ -44,12 +44,12 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id"
+								":emission_source_id"
 							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "emission_source_id",
+									"value": ""
 								}
 							]
 						}
@@ -100,7 +100,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id",
 							"host": [
 								"localhost"
 							],
@@ -109,12 +109,12 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id"
+								":emission_source_id"
 							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "emission_source_id",
+									"value": ""
 								}
 							]
 						}
@@ -127,7 +127,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id",
 							"host": [
 								"localhost"
 							],
@@ -136,12 +136,12 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id"
+								":emission_source_id"
 							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "emission_source_id",
+									"value": ""
 								}
 							]
 						}
@@ -159,7 +159,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions?from_year=2022&to_year=2024",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id/consumptions?from_year=2022&to_year=2024",
 							"host": [
 								"localhost"
 							],
@@ -168,7 +168,7 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id",
+								":emission_source_id",
 								"consumptions"
 							],
 							"query": [
@@ -183,8 +183,8 @@
 							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "emission_source_id",
+									"value": "2"
 								}
 							]
 						}
@@ -198,7 +198,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"year\":2024,\r\n    \"value\": 60.76,\r\n    \"unit_id\": 2,\r\n    \"fuel_id\": 5\r\n}",
+							"raw": "{\r\n    \"year\":2022,\r\n    \"value\": 60.76,\r\n    \"unit_id\": 1,\r\n    \"fuel_id\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -206,7 +206,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id/consumptions",
 							"host": [
 								"localhost"
 							],
@@ -215,13 +215,13 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id",
+								":emission_source_id",
 								"consumptions"
 							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "emission_source_id",
+									"value": "2"
 								}
 							]
 						}
@@ -243,7 +243,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions/:consumptions_id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id/consumptions/:consumptions_id",
 							"host": [
 								"localhost"
 							],
@@ -252,13 +252,13 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id",
+								":emission_source_id",
 								"consumptions",
 								":consumptions_id"
 							],
 							"variable": [
 								{
-									"key": "id",
+									"key": "emission_source_id",
 									"value": "1"
 								},
 								{
@@ -276,7 +276,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions/total?year=2022",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions/total?from_year=2023",
 							"host": [
 								"localhost"
 							],
@@ -291,14 +291,14 @@
 							],
 							"query": [
 								{
-									"key": "year",
-									"value": "2022"
+									"key": "from_year",
+									"value": "2023"
 								}
 							],
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
@@ -311,7 +311,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/v1/inventory/emission-sources/:id/consumptions/:consumptions_id",
+							"raw": "localhost:3000/v1/inventory/emission-sources/:emission_source_id/consumptions/:consumptions_id",
 							"host": [
 								"localhost"
 							],
@@ -320,18 +320,18 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id",
+								":emission_source_id",
 								"consumptions",
 								":consumptions_id"
 							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "emission_source_id",
+									"value": "2"
 								},
 								{
 									"key": "consumptions_id",
-									"value": "6"
+									"value": "12"
 								}
 							]
 						}
@@ -364,7 +364,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
@@ -401,7 +401,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
@@ -439,11 +439,11 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								},
 								{
 									"key": "reduction_id",
-									"value": "2"
+									"value": "3"
 								}
 							]
 						}
@@ -472,11 +472,11 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								},
 								{
 									"key": "reduction_id",
-									"value": "1"
+									"value": "5"
 								}
 							]
 						}
@@ -494,7 +494,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/v1/inventory/emission-sources/:id/predictions?by=ai",
+							"raw": "http://localhost:3000/v1/inventory/emission-sources/:emission_source_id/predictions?to_year=2026",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -504,24 +504,29 @@
 								"v1",
 								"inventory",
 								"emission-sources",
-								":id",
+								":emission_source_id",
 								"predictions"
 							],
 							"query": [
 								{
 									"key": "by",
 									"value": "ai",
-									"description": "manual"
+									"description": "manual",
+									"disabled": true
 								},
 								{
 									"key": "by",
 									"value": "manual",
 									"disabled": true
+								},
+								{
+									"key": "to_year",
+									"value": "2026"
 								}
 							],
 							"variable": [
 								{
-									"key": "id",
+									"key": "emission_source_id",
 									"value": "1"
 								}
 							]
@@ -535,7 +540,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/v1/inventory/emission-sources/:id/predictions?by=ai",
+							"raw": "http://localhost:3000/v1/inventory/emission-sources/:id/predictions?by=ai&to_year=2029",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -558,13 +563,41 @@
 									"key": "by",
 									"value": "manual",
 									"disabled": true
+								},
+								{
+									"key": "to_year",
+									"value": "2029"
 								}
 							],
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "factor",
+			"item": [
+				{
+					"name": "list-all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/v1/factors",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"v1",
+								"factors"
 							]
 						}
 					},
